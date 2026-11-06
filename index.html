@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Practice · Japan's Cultural Borrowing</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
+        body { background: #f2f5f9; display: flex; justify-content: center; padding: 2rem 1.5rem; min-height: 100vh; }
+        .app-container { max-width: 1000px; width: 100%; background: white; border-radius: 32px; box-shadow: 0 20px 40px -12px rgba(0,20,30,0.25); padding: 2rem 2rem 2.5rem; }
+
+        /* --- start screen --- */
+        .start-screen { display: flex; flex-direction: column; align-items: center; gap: 1.8rem; padding: 1.5rem 0 0.5rem; }
+        .start-screen h1 { font-size: 2.1rem; font-weight: 600; color: #0b2b3b; border-bottom: 3px solid #3a7ca5; padding-bottom: 0.5rem; text-align: center; }
+        .form-group { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label { font-weight: 500; color: #1d3b4f; font-size: 1rem; }
+        .form-group input { padding: 0.9rem 1.2rem; border: 1.5px solid #cbdae6; border-radius: 60px; font-size: 1rem; outline: none; background: #fbfdff; transition: border .15s, box-shadow .15s; }
+        .form-group input:focus { border-color: #3a7ca5; box-shadow: 0 0 0 4px rgba(58,124,165,0.15); }
+        .btn { background: #1f5e7a; color: white; font-weight: 600; font-size: 1.1rem; padding: 0.9rem 2.5rem; border: none; border-radius: 60px; cursor: pointer; box-shadow: 0 6px 14px rgba(27,74,94,0.3); margin-top: 0.8rem; transition: background .2s, transform .1s; }
+        .btn:hover { background: #0f435b; }
+        .btn:active { transform: scale(0.97); }
+        .btn-secondary { background: #e7eef4; color: #1d3b4f; box-shadow: none; border: 1px solid #b8cfdf; font-weight: 500; }
+        .btn-secondary:hover { background: #d2e0ea; }
+
+        /* --- test screen --- */
+        .test-screen { display: flex; flex-direction: column; gap: 1.8rem; }
+        .user-badge { background: #e7f0f7; border-radius: 40px; padding: 0.6rem 1.5rem; display: inline-flex; align-items: center; gap: 0.6rem; font-size: 0.95rem; color: #1d3b4f; align-self: flex-start; border: 1px solid #c2d8e8; flex-wrap: wrap; }
+        .user-badge span { font-weight: 600; color: #0a3142; }
+        
+        .reading-section { background: #f8fbfe; border-radius: 24px; padding: 1.5rem 1.8rem; border-left: 6px solid #3a7ca5; max-height: 400px; overflow-y: auto; font-size: 0.96rem; line-height: 1.65; color: #1e2f3a; margin-bottom: 1rem; scrollbar-width: thin; }
+        .reading-section h3 { font-size: 1.2rem; font-weight: 600; color: #123b4e; margin-bottom: 0.6rem; letter-spacing: -0.01em; }
+        .reading-section p { margin-bottom: 0.8rem; }
+        .reading-section p:last-child { margin-bottom: 0; }
+
+        .question-list { display: flex; flex-direction: column; gap: 1.4rem; margin: 0.5rem 0 0.8rem; }
+        .question-item { background: #ffffff; border-radius: 20px; padding: 1.2rem 1.6rem; border: 1px solid #d9e5f0; transition: box-shadow .2s; }
+        .question-item:hover { box-shadow: 0 6px 16px rgba(0,33,55,0.06); }
+        .question-text { font-weight: 500; font-size: 1.05rem; color: #0a293b; margin-bottom: 0.7rem; display: flex; gap: 8px; flex-wrap: wrap; }
+        .question-number { font-weight: 700; color: #3a7ca5; min-width: 1.8rem; }
+        
+        /* === LETTERED OPTIONS (a, b, c, d) === */
+        .options { display: flex; flex-direction: column; gap: 0.5rem; margin-left: 2rem; padding-left: 0.5rem; border-left: 2px solid #e2ecf5; }
+        .option { display: flex; align-items: flex-start; gap: 0.55rem; font-size: 0.98rem; color: #1f4055; padding: 0.2rem 0; cursor: pointer; }
+        .option input[type="radio"] { margin-top: 0.25rem; accent-color: #2c6f8f; width: 1.05rem; height: 1.05rem; cursor: pointer; flex-shrink: 0; }
+        .opt-letter { font-weight: 600; color: #3a7ca5; min-width: 1.3rem; }
+        .opt-text { flex: 1; }
+
+        .submit-container { display: flex; justify-content: flex-end; margin-top: 1.2rem; }
+
+        /* --- result screen --- */
+        .result-screen { display: flex; flex-direction: column; gap: 1.8rem; }
+        .result-header { background: linear-gradient(145deg, #e2eef9, #d1e2f0); padding: 1.6rem 2rem; border-radius: 28px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; }
+        .result-header .info h2 { font-size: 1.5rem; font-weight: 600; color: #0a2f40; margin-bottom: 0.2rem; }
+        .result-header .info p { font-size: 1rem; color: #1d4b61; display: flex; flex-wrap: wrap; gap: 0.8rem 1.8rem; }
+        .result-header .info span.value { font-weight: 700; color: #103d52; }
+        .score-box { background: #1e4e63; color: white; padding: 0.9rem 2rem; border-radius: 60px; font-weight: 700; font-size: 1.9rem; display: flex; align-items: baseline; gap: 0.3rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .score-box small { font-size: 1rem; font-weight: 400; opacity: 0.9; margin-left: 0.3rem; }
+
+        .review-list { display: flex; flex-direction: column; gap: 1rem; }
+        .review-item { background: #ffffff; border-radius: 18px; padding: 1.2rem 1.6rem; border-left: 6px solid #b0c9db; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.6rem 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .review-item.correct { border-left-color: #2a9d8f; background: #f5fdfb; }
+        .review-item.incorrect { border-left-color: #d45a5a; background: #fef7f7; }
+        .review-q { font-weight: 600; color: #123b4e; display: flex; gap: 10px; flex: 1 1 200px; flex-wrap: wrap; }
+        .review-detail { display: flex; flex-wrap: wrap; gap: 1.2rem 2rem; font-size: 0.95rem; color: #1e3f52; }
+        .review-detail .item { display: flex; gap: 0.6rem; }
+        .review-detail .label { font-weight: 500; color: #4f6f82; }
+        .correct-ans { color: #1d7a6b; font-weight: 600; }
+        .wrong-ans { color: #b33f3f; font-weight: 600; }
+        .badge-ok { background: #dff3ef; color: #1d6b5e; padding: 0.1rem 0.8rem; border-radius: 40px; font-size: 0.8rem; font-weight: 600; }
+        .back-link { margin-top: 0.5rem; text-align: center; }
+
+        .hidden { display: none !important; }
+
+        .reading-section::-webkit-scrollbar { width: 6px; }
+        .reading-section::-webkit-scrollbar-track { background: #e7eef4; border-radius: 10px; }
+        .reading-section::-webkit-scrollbar-thumb { background: #b1c9db; border-radius: 10px; }
+
+        @media (max-width: 700px) {
+            .app-container { padding: 1.5rem; }
+            .result-header { flex-direction: column; align-items: flex-start; }
+            .options { margin-left: 1rem; }
+            .question-text { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container" id="appContainer">
+        <!-- START SCREEN -->
+        <div id="startScreen" class="start-screen">
+            <h1>📖 Reading Practice</h1>
+            <div class="form-group">
+                <label for="fullName">Full name</label>
+                <input type="text" id="fullName" placeholder="e.g., Alex Rivera" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="studyProgram">Study program</label>
+                <input type="text" id="studyProgram" placeholder="e.g., History, English Literature" autocomplete="off">
+            </div>
+            <button class="btn" id="startBtn">Next →</button>
+        </div>
+
+        <!-- TEST SCREEN -->
+        <div id="testScreen" class="test-screen hidden">
+            <div class="user-badge" id="userBadge">
+                👤 <span id="badgeName"></span> · <span id="badgeProgram"></span>
+            </div>
+
+            <!-- Reading Passage -->
+            <div class="reading-section">
+                <h3>Japan's Cultural Borrowing from China</h3>
+                <p>Around the seventh century, Japan's leaders embarked on a massive and deliberate cultural borrowing campaign. Numerous officials and scholars were sent to China to learn directly about its culture and institutions. They brought back with them knowledge of Chinese learning as well as patterns of bureaucratic administration and organization. These cultural elements were viewed as tools of civilization, even the marks of civilization itself, and were vigorously incorporated into Japanese life.</p>
+                <p>Governance in Japan had been traditionally divided among many kingdoms ruled by separate tribes and warlords. This changed in AD 645 after a coup d'état consolidated control under Emperor Kōtoku, who quickly enacted political reforms. Known as the Taika Reform Edicts, they established a centralized system of government based on the Chinese bureaucratic model. Accordingly, the emperor exercised supreme control over all provinces, and government officials were required to undergo a civil service examination modeled on that of China's Tang Dynasty (618-907). The capital of the newly unified Japan was established at Nara, and it was planned on a rectangular grid system to resemble the Chinese capital of Chang An, with an enclosed palace in the north, east-west avenues intersecting a wide central boulevard, and a main gate entrance in the south. The symbolic significance of this city planning strategy was to match the arrangement of the bureaucracy. Having the emperor's palace centered in the north signified his place above the people, as heaven is situated over the land. Large plots of land near the palace were reserved for residences of the nobility, and further out, plots were blocked into small sections, which were occupied by commoners.</p>
+                <p>Additional evidence of borrowing from the Asian mainland is reflected in art and architecture. The Japanese government formally embraced Buddhism as its state religion, and was keen on importing Buddhist art objects from Korea, China, and India. Locally, Chinese and Korean craftsmen created the vast majority of Buddhist sculptures and paintings in Japan prior to the eighth century, but as Japanese artisans gained more comprehensive knowledge, they commenced their own artistic endeavors in Chinese style. The Japanese court sponsored these activities and built large temples in the capital at great cost. The most impressive of these was Todaiji Temple, which was constructed on a gigantic scale in 752. Its celebrated work of art was a sixteen-meter statue of Vairocana Buddha. The statue was cast in bronze and was housed in the largest wooden structure in the world. Works by Japanese sculptors, such as renditions of famous Buddhist priests, were also displayed at the temple, along with painted works depicting prominent Buddhist figures.</p>
+                <p>In literature, the Chinese language factored strongly into the development of Japanese prose and verse. Since Japan had no script of its own, it borrowed Chinese characters for writing. This linguistic adoption gave the Japanese access to a vast amount of Chinese scholarship. In addition, it fostered intellectual creativity on the islands, as Japanese scholars soon began producing literary manuscripts themselves. The earliest extant texts of Japanese origin are dated to the start of the eighth century.</p>
+                <p>Much of the prose written in Chinese was tightly connected to Confucian classics and the civil service exams: any Japanese man who sought to gain a government post had to study Chinese history and philosophy. However, Japanese writers also composed in their own language using Chinese characters. This application of the Chinese writing system to Japanese was difficult. Therefore, most poetry in Japan remained native, and Chinese characters were used merely to apply written signs to Japanese syllables, words, and endings. The oldest examples of Japanese poetry are found in the Man'yōshū, an anthology compiled in AD 759. Its poems are structurally formed with the Japanese language. These native poems, known as waka, seem to have had no class or gender limits and focused on popular topics like sorrow and love. These were distinct from poetry composed using Chinese word order and grammar, called kanshi, which was the scholarly verse of the upper class.</p>
+                <p>The influence of the mainland began long before the seventh century and continued long after Japan stopped sending official missions in 894, but for three centuries, Japan's embracement of Chinese culture was intentional and intensive. This is largely attributable to the concurrent stability and progress of Tang China, a civilization that held the utmost power and prestige in Asia.</p>
+            </div>
+
+            <!-- Questions -->
+            <div class="question-list" id="questionList"></div>
+
+            <div class="submit-container">
+                <button class="btn" id="submitBtn">Submit test ✓</button>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen hidden">
+            <div class="result-header" id="resultHeader"></div>
+            <div class="review-list" id="reviewList"></div>
+            <div class="back-link">
+                <button class="btn btn-secondary" id="restartBtn">↺ Take again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // 20 Questions (Answers mapped from the provided key)
+            const questions = [
+                { text: "Why did Japan send officials and scholars to China in the 7th century?", options: ["To expand trade", "To study culture and institutions", "To establish colonies", "To spread Buddhism"], answer: 1 }, // b
+                { text: "What was a result of the Taika Reform Edicts?", options: ["Local kingdoms gained power", "Buddhism was banned", "Government became centralized", "The capital moved to China"], answer: 2 }, // c
+                { text: "Why was Nara designed like Chang An?", options: ["To improve defense", "To imitate Chinese organization", "To attract merchants", "To support farming"], answer: 1 }, // b
+                { text: "What was notable about Todaiji Temple?", options: ["It housed a large Buddha statue", "It was built by Korean rulers", "It contained military offices", "It served as a university"], answer: 0 }, // a
+                { text: "Why did Japan borrow Chinese characters?", options: ["It lacked a writing system", "It wanted to replace Japanese", "It needed trade records", "It had lost its script"], answer: 0 }, // a
+                { text: "How did waka differ from kanshi?", options: ["Waka used Korean grammar", "Waka was written only by nobles", "Waka focused on science", "Waka followed Japanese language patterns"], answer: 3 }, // d
+                { text: "The word \"consolidated\" is closest in meaning to", options: ["divided", "strengthened", "challenged", "reduced"], answer: 1 }, // b
+                { text: "The word \"commenced\" is closest in meaning to", options: ["began", "completed", "copied", "delayed"], answer: 0 }, // a
+                { text: "The word \"extant\" is closest in meaning to", options: ["famous", "ancient", "existing", "translated"], answer: 2 }, // c
+                { text: "The word \"anthology\" is closest in meaning to", options: ["collection", "language", "poem", "document"], answer: 0 }, // a
+                { text: "The word \"prominent\" is closest in meaning to", options: ["wealthy", "important", "foreign", "religious"], answer: 1 }, // b
+                { text: "The word \"attributable\" is closest in meaning to", options: ["opposed", "compared", "connected", "ignored"], answer: 2 }, // c
+                { text: "What was the main purpose of Japan's cultural borrowing from China?", options: ["To strengthen Japanese civilization and institutions", "To replace Japanese traditions entirely", "To establish military control over China", "To increase overseas trade"], answer: 0 }, // a
+                { text: "How did the arrangement of Nara reflect the Japanese political system?", options: ["It separated religious and military activities", "It placed the emperor above other social groups", "It gave equal status to all residents", "It followed the natural landscape"], answer: 1 }, // b
+                { text: "How did Japanese Buddhist art gradually develop?", options: ["It remained entirely dependent on foreign artists", "It rejected Chinese artistic traditions", "Japanese artisans began producing their own works", "It focused mainly on everyday activities"], answer: 2 }, // c
+                { text: "What was one important effect of adopting Chinese writing?", options: ["Japanese literature disappeared", "Chinese became the only spoken language", "Poetry became limited to government officials", "Japanese scholars gained access to Chinese knowledge and developed their own literature"], answer: 3 }, // d
+                { text: "What explains Japan's intensive adoption of Chinese culture for three centuries?", options: ["China's political stability and cultural prestige", "Japan's lack of political leadership", "China's control over Japanese territory", "The decline of Japanese artistic traditions"], answer: 0 }, // a
+                { text: "The word \"bureaucratic\" is closest in meaning to:", options: ["Religious", "Administrative", "Artistic", "Military"], answer: 1 }, // b
+                { text: "The word \"endeavors\" is closest in meaning to:", options: ["Attempts or efforts", "Rules or regulations", "Traditions or customs", "Beliefs or opinions"], answer: 0 }, // a
+                { text: "The word \"fostered\" is closest in meaning to:", options: ["Prevented", "Replaced", "Encouraged", "Restricted"], answer: 2 } // c
+            ];
+
+            let userAnswers = new Array(questions.length).fill(null);
+            let fullName = '';
+            let studyProgram = '';
+            let startTime = null;
+            let testCompleted = false;
+
+            const startScreen = document.getElementById('startScreen');
+            const testScreen = document.getElementById('testScreen');
+            const resultScreen = document.getElementById('resultScreen');
+            const fullNameInput = document.getElementById('fullName');
+            const studyProgramInput = document.getElementById('studyProgram');
+            const startBtn = document.getElementById('startBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            const restartBtn = document.getElementById('restartBtn');
+            const questionList = document.getElementById('questionList');
+            const badgeName = document.getElementById('badgeName');
+            const badgeProgram = document.getElementById('badgeProgram');
+            const resultHeader = document.getElementById('resultHeader');
+            const reviewList = document.getElementById('reviewList');
+
+            function renderQuestions() {
+                if (!questionList) return;
+                let html = '';
+                questions.forEach((q, idx) => {
+                    const qNum = idx + 1;
+                    html += `<div class="question-item" id="q-${idx}">`;
+                    html += `<div class="question-text"><span class="question-number">${qNum}.</span> <span class="question-body">${q.text}</span></div>`;
+                    html += `<div class="options">`;
+                    q.options.forEach((opt, optIdx) => {
+                        const letter = String.fromCharCode(97 + optIdx);
+                        const checked = (userAnswers[idx] === optIdx) ? 'checked' : '';
+                        html += `<label class="option">
+                                    <input type="radio" name="q${idx}" value="${optIdx}" data-qidx="${idx}" ${checked}>
+                                    <span class="opt-letter">${letter}.</span>
+                                    <span class="opt-text">${opt}</span>
+                                 </label>`;
+                    });
+                    html += `</div></div>`;
+                });
+                questionList.innerHTML = html;
+
+                document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        const qIdx = parseInt(this.dataset.qidx);
+                        const val = parseInt(this.value);
+                        if (!isNaN(qIdx) && !isNaN(val)) userAnswers[qIdx] = val;
+                    });
+                });
+            }
+
+            function formatDuration(ms) {
+                const totalSec = Math.floor(ms / 1000);
+                return `${Math.floor(totalSec / 60)} min ${totalSec % 60} sec`;
+            }
+
+            function showTestScreen() {
+                startScreen.classList.add('hidden');
+                resultScreen.classList.add('hidden');
+                testScreen.classList.remove('hidden');
+                badgeName.textContent = fullName || 'Student';
+                badgeProgram.textContent = studyProgram || '—';
+                renderQuestions();
+            }
+
+            function startTest() {
+                const name = fullNameInput.value.trim();
+                const program = studyProgramInput.value.trim();
+                if (!name) { alert('Please enter your full name.'); return; }
+                if (!program) { alert('Please enter your study program.'); return; }
+                fullName = name;
+                studyProgram = program;
+                userAnswers = new Array(questions.length).fill(null);
+                startTime = Date.now();
+                testCompleted = false;
+                showTestScreen();
+            }
+
+            function computeScore() {
+                let correct = 0;
+                questions.forEach((q, idx) => { if (userAnswers[idx] === q.answer) correct++; });
+                return { correct, total: questions.length };
+            }
+
+            function showResult() {
+                const durationMs = Date.now() - startTime;
+                const timeStr = formatDuration(durationMs);
+                const { correct, total } = computeScore();
+
+                resultHeader.innerHTML = `
+                    <div class="info">
+                        <h2>${fullName}</h2>
+                        <p>
+                            <span>📚 <span class="value">${studyProgram}</span></span>
+                            <span>⏱️ Time taken: <span class="value">${timeStr}</span></span>
+                        </p>
+                    </div>
+                    <div class="score-box">${correct}<small>/${total}</small></div>
+                `;
+
+                let reviewHtml = '';
+                questions.forEach((q, idx) => {
+                    const userAns = userAnswers[idx];
+                    const isCorrect = (userAns === q.answer);
+                    const userLetter = (userAns !== null && userAns !== undefined) ? String.fromCharCode(97 + userAns) : '—';
+                    const correctLetter = String.fromCharCode(97 + q.answer);
+                    const userText = (userAns !== null && userAns !== undefined) ? q.options[userAns] : 'Not answered';
+                    const correctText = q.options[q.answer];
+
+                    reviewHtml += `<div class="review-item ${isCorrect ? 'correct' : 'incorrect'}">
+                        <div class="review-q"><span class="question-number">${idx+1}.</span> <span class="question-body">${q.text}</span></div>
+                        <div class="review-detail">
+                            <div class="item"><span class="label">Your answer:</span> 
+                                <span class="${isCorrect ? 'correct-ans' : 'wrong-ans'}">${userLetter}. ${userText}</span>
+                            </div>
+                            <div class="item"><span class="label">Key:</span> 
+                                <span class="correct-ans">${correctLetter}. ${correctText}</span>
+                            </div>
+                            ${isCorrect ? '<span class="badge-ok">✓ correct</span>' : ''}
+                        </div>
+                    </div>`;
+                });
+                reviewList.innerHTML = reviewHtml;
+
+                startScreen.classList.add('hidden');
+                testScreen.classList.add('hidden');
+                resultScreen.classList.remove('hidden');
+            }
+
+            function onSubmit() {
+                const missing = userAnswers.some(a => a === null || a === undefined);
+                if (missing) {
+                    if (!confirm('Some questions are unanswered. Submit anyway?')) return;
+                }
+                if (testCompleted) return;
+                testCompleted = true;
+                showResult();
+            }
+
+            function restart() {
+                userAnswers = new Array(questions.length).fill(null);
+                fullName = ''; studyProgram = ''; startTime = null; testCompleted = false;
+                fullNameInput.value = ''; studyProgramInput.value = '';
+                startScreen.classList.remove('hidden');
+                testScreen.classList.add('hidden');
+                resultScreen.classList.add('hidden');
+            }
+
+            startBtn.addEventListener('click', startTest);
+            submitBtn.addEventListener('click', onSubmit);
+            restartBtn.addEventListener('click', restart);
+            fullNameInput.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); studyProgramInput.focus(); } });
+            studyProgramInput.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); startTest(); } });
+        })();
+    </script>
+</body>
+</html>
